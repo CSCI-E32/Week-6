@@ -4,12 +4,14 @@ var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
 var Server = require('karma').Server;
 var jshint = require('gulp-jshint');
+var connect = require('gulp-connect');
 
 gulp.task('buildApp', function(){
   return gulp.src('src/js/**/*.js')
     .pipe(concat('app.js'))
     .pipe(uglify())
-    .pipe(gulp.dest('bist'));
+    .pipe(gulp.dest('bist'))
+    .pipe(connect.reload());
 });
 
 gulp.task('buildVendor', function(){
@@ -27,12 +29,14 @@ gulp.task('buildCSS', function(){
     'src/css/**/*.css'])
   .pipe(concat('styles.css'))
   .pipe(minifycss())
-  .pipe(gulp.dest('bist'));
+  .pipe(gulp.dest('bist'))
+  .pipe(connect.reload());
 });
 
 gulp.task('moveHTML', function(){
   return gulp.src('src/**/*.html')
-    .pipe(gulp.dest('bist'));
+    .pipe(gulp.dest('bist'))
+    .pipe(connect.reload());
 });
 
 gulp.task('build', ['buildApp', 'buildVendor', 'buildCSS', 'moveHTML']);
@@ -56,4 +60,17 @@ gulp.task('test', ['karma', 'jshint']);
 
 // ***************************************
 
-gulp.task('default', ['build', 'test']);
+gulp.task('connect', function(){
+  connect.server({
+    root: 'bist',
+    livereload: true
+  });
+});
+
+gulp.task('watch', function(){
+  gulp.watch('src/js/**/*.js', ['buildApp']);
+  gulp.watch('src/css/**/*.css', ['buildCSS']);
+  gulp.watch('src/**/*.html', ['moveHTML']);
+});
+
+gulp.task('default', ['build', 'test', 'watch', 'connect']);

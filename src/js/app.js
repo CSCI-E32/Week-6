@@ -1,3 +1,3 @@
 $(document).ready(function(){
-  $('#name').html("JaZahn Clevenger");
+  $('#name').html("JaZahn");
 });
